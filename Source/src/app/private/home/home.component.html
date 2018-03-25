@@ -1,0 +1,15 @@
+
+<div class="row">
+	<div class="col-md-6 col-sm-3">
+		<p>Welcome! {{homeDetails?.message}}</p>
+		<p><strong>Name:</strong> {{homeDetails?.firstName}} {{homeDetails?.lastName}}</p>
+		<p *ngIf="homeDetails?.currentTariff"><strong>Tariff:</strong> {{homeDetails?.currentTariff}}</p>
+		<p *ngIf="homeDetails?.passportSeries"><strong>Passport series:</strong> {{homeDetails?.passportSeries}}</p>
+		<p *ngIf="homeDetails?.balance"><strong>Balance:</strong> {{homeDetails?.balance}}</p>
+	</div>
+</div>
+
+ 
+ 
+ 
+  
