@@ -21,13 +21,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace AspNetCore
 {
     public class Startup
     {
-        private const string SecretKey = "ourSuperMegaSecretKey"; 
+        private const string SecretKey = "ourSuperMegaSecretKey";
 
         private readonly SymmetricSecurityKey
             _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
