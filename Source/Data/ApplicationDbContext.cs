@@ -10,7 +10,6 @@ namespace AspNetCore.Data
             : base(options)
         {
         }
-
         public DbSet<Customer> Customers { get; set; }
     }
 }

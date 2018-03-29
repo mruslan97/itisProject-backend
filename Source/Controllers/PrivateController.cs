@@ -76,7 +76,7 @@ namespace AspNetCore.Controllers
             var userId = _caller.Claims.Single(c => c.Type == "id");
             var customer = await _appDbContext.Customers.Include(c => c.Identity)
                 .SingleAsync(c => c.Identity.Id == userId.Value);
-            if (!customer.Identity.IsAdmin)
+            if (customer.Identity.Role != Roles.Admin)
                 return Unauthorized();
             var customers = _appDbContext.Customers;
             return new OkObjectResult(customers);
