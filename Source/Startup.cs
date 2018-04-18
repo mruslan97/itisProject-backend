@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,7 +50,14 @@ namespace AspNetCore
 
             services.AddSingleton<IJwtFactory, JwtFactory>();
             services.TryAddTransient<IHttpContextAccessor, HttpContextAccessor>();
-            
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigin", builder_ => builder_.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            });
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
+            });
             // jwt wire up
             // Get options from app settings
             var jwtAppSettingOptions = Configuration.GetSection(nameof(JwtIssuerOptions));
