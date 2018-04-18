@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -12,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 namespace AspNetCore.Controllers
 {
     [Authorize(Policy = "ApiUser")]
-    [Route("api/[controller]/[action]")]
     public class PrivateController : Controller
     {
         private readonly ApplicationDbContext _appDbContext;
@@ -26,7 +26,7 @@ namespace AspNetCore.Controllers
         }
 
         // GET api/dashboard/home
-        [HttpGet]
+        [HttpGet("api/auth/currentUser")]
         public async Task<IActionResult> Home()
         {
             // retrieve the user info
@@ -35,9 +35,10 @@ namespace AspNetCore.Controllers
 
             var customer = await _appDbContext.Customers.Include(c => c.Identity)
                 .SingleAsync(c => c.Identity.Id == userId.Value);
-
+            var userRole = Enum.GetName(typeof(Roles), customer.Identity.Role);
             return new OkObjectResult(new
             {
+                userRole,
                 customer.Identity.FirstName,
                 customer.Identity.LastName,
                 customer.Balance,
@@ -46,7 +47,7 @@ namespace AspNetCore.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpGet("api/changeTariff")]
         public async Task<IActionResult> ChangeTariff(string tariff)
         {
             var userId = _caller.Claims.Single(c => c.Type == "id");
@@ -57,7 +58,7 @@ namespace AspNetCore.Controllers
             return Ok();
         }
 
-        [HttpGet]
+        [HttpGet("api/upBalance")]
         public async Task<IActionResult> UpBalance(int sum)
         {
             var userId = _caller.Claims.Single(c => c.Type == "id");
@@ -68,7 +69,7 @@ namespace AspNetCore.Controllers
             return Ok();
         }
 
-        [HttpGet]
+        [HttpGet("api/admin")]
         public async Task<IActionResult> Admin()
         {
             // retrieve the user info
