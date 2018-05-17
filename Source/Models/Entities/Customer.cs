@@ -7,8 +7,7 @@ namespace AspNetCore.Models.Entities
         public AppUser Identity { get; set; }
         public int Balance { get; set; }
         public string PassportSeries { get; set; }
-
-        public string CurrentTariff { get; set; }
-        // public bool IsAdmin { get; set; }
+        public string Republic { get; set; }
+        public Tariff Tariff { get; set; }
     }
 }

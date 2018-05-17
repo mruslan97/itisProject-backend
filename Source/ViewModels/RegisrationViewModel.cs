@@ -6,6 +6,7 @@
         public string Password { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string Republic { get; set; }
         public string PassportSeries { get; set; }
     }
 }

@@ -33,7 +33,7 @@ namespace AspNetCore.Controllers
             //HttpContext.User
             var userId = _caller.Claims.Single(c => c.Type == "id");
 
-            var customer = await _appDbContext.Customers.Include(c => c.Identity)
+            var customer = await _appDbContext.Customers.Include(c => c.Identity).Include(t => t.Tariff)
                 .SingleAsync(c => c.Identity.Id == userId.Value);
             var userRole = Enum.GetName(typeof(Roles), customer.Identity.Role);
             return new OkObjectResult(new
@@ -42,18 +42,30 @@ namespace AspNetCore.Controllers
                 customer.Identity.FirstName,
                 customer.Identity.LastName,
                 customer.Balance,
-                customer.CurrentTariff,
-                customer.PassportSeries
+                customer.Republic,
+                customer.PassportSeries,
+                customer.Tariff
             });
         }
 
-        [HttpGet("api/changeTariff")]
-        public async Task<IActionResult> ChangeTariff(string tariff)
+        [HttpGet("api/changeRepublic")]
+        public async Task<IActionResult> ChangeRepublic(string republic)
         {
             var userId = _caller.Claims.Single(c => c.Type == "id");
             var customer = await _appDbContext.Customers.Include(c => c.Identity)
                 .SingleAsync(c => c.Identity.Id == userId.Value);
-            customer.CurrentTariff = tariff;
+            customer.Republic = republic;
+            _appDbContext.SaveChanges();
+            return Ok();
+        }
+
+        [HttpGet("api/changeTariff")]
+        public async Task<IActionResult> ChangeTariff(int tariffId)
+        {
+            var userId = _caller.Claims.Single(c => c.Type == "id");
+            var customer = await _appDbContext.Customers.Include(c => c.Identity)
+                .SingleAsync(c => c.Identity.Id == userId.Value);
+            customer.Tariff = _appDbContext.Tariffs.SingleOrDefault(t => t.Id == tariffId);
             _appDbContext.SaveChanges();
             return Ok();
         }

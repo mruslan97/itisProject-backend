@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AspNetCore.Data;
 using AspNetCore.Helpers;
@@ -44,7 +45,8 @@ namespace AspNetCore.Controllers
             {
                 IdentityId = userIdentity.Id,
                 Balance = balance,
-                CurrentTariff = "Smart",
+                Tariff = _appDbContext.Tariffs.SingleOrDefault(t => t.Id == 1),
+                Republic = model.Republic,
                 PassportSeries = model.PassportSeries
                 //IsAdmin = false
             });
