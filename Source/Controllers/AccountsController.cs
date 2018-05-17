@@ -46,7 +46,7 @@ namespace AspNetCore.Controllers
                 IdentityId = userIdentity.Id,
                 Balance = balance,
                 Tariff = _appDbContext.Tariffs.SingleOrDefault(t => t.Id == 1),
-                Republic = model.Republic,
+                Republic = _appDbContext.Republics.SingleOrDefault(r => r.Id == model.RepublicId),
                 PassportSeries = model.PassportSeries
                 //IsAdmin = false
             });

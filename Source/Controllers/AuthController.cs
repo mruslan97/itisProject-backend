@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using AspNetCore.Auth;
+using AspNetCore.Data;
 using AspNetCore.Helpers;
 using AspNetCore.Models;
 using AspNetCore.Models.Entities;
@@ -18,13 +19,15 @@ namespace AspNetCore.Controllers
         private readonly IJwtFactory _jwtFactory;
         private readonly JwtIssuerOptions _jwtOptions;
         private readonly UserManager<AppUser> _userManager;
+        private readonly ApplicationDbContext _appDbContext;
 
         public AuthController(UserManager<AppUser> userManager, IJwtFactory jwtFactory,
-            IOptions<JwtIssuerOptions> jwtOptions)
+            IOptions<JwtIssuerOptions> jwtOptions, ApplicationDbContext appDbContext)
         {
             _userManager = userManager;
             _jwtFactory = jwtFactory;
             _jwtOptions = jwtOptions.Value;
+            _appDbContext = appDbContext;
         }
 
         // POST api/auth/login

@@ -12,5 +12,6 @@ namespace AspNetCore.Data
         }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Tariff> Tariffs { get; set; }
+        public DbSet<Republic> Republics { get; set; }
     }
 }

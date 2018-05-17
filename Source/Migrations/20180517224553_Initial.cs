@@ -52,6 +52,37 @@ namespace AspNetCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Republics",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Republics", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tariffs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Calls = table.Column<int>(type: "int", nullable: false),
+                    Cost = table.Column<int>(type: "int", nullable: false),
+                    Internet = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Sms = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tariffs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -164,9 +195,10 @@ namespace AspNetCore.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Balance = table.Column<int>(type: "int", nullable: false),
-                    CurrentTariff = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IdentityId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    PassportSeries = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    PassportSeries = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RepublicId = table.Column<int>(type: "int", nullable: false),
+                    TariffId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -175,6 +207,18 @@ namespace AspNetCore.Migrations
                         name: "FK_Customers_AspNetUsers_IdentityId",
                         column: x => x.IdentityId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Customers_Republics_RepublicId",
+                        column: x => x.RepublicId,
+                        principalTable: "Republics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Customers_Tariffs_TariffId",
+                        column: x => x.TariffId,
+                        principalTable: "Tariffs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -222,6 +266,16 @@ namespace AspNetCore.Migrations
                 name: "IX_Customers_IdentityId",
                 table: "Customers",
                 column: "IdentityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customers_RepublicId",
+                table: "Customers",
+                column: "RepublicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customers_TariffId",
+                table: "Customers",
+                column: "TariffId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -249,6 +303,12 @@ namespace AspNetCore.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Republics");
+
+            migrationBuilder.DropTable(
+                name: "Tariffs");
         }
     }
 }

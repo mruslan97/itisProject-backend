@@ -12,8 +12,8 @@ using System;
 namespace AspNetCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180517105820_TariffsChange")]
-    partial class TariffsChange
+    [Migration("20180517224553_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -90,7 +90,7 @@ namespace AspNetCore.Migrations
 
                     b.Property<string>("PassportSeries");
 
-                    b.Property<string>("Republic");
+                    b.Property<int>("RepublicId");
 
                     b.Property<int?>("TariffId");
 
@@ -98,9 +98,25 @@ namespace AspNetCore.Migrations
 
                     b.HasIndex("IdentityId");
 
+                    b.HasIndex("RepublicId");
+
                     b.HasIndex("TariffId");
 
                     b.ToTable("Customers");
+                });
+
+            modelBuilder.Entity("AspNetCore.Models.Entities.Republic", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Code");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Republics");
                 });
 
             modelBuilder.Entity("AspNetCore.Models.Entities.Tariff", b =>
@@ -236,6 +252,11 @@ namespace AspNetCore.Migrations
                     b.HasOne("AspNetCore.Models.Entities.AppUser", "Identity")
                         .WithMany()
                         .HasForeignKey("IdentityId");
+
+                    b.HasOne("AspNetCore.Models.Entities.Republic", "Republic")
+                        .WithMany("Customers")
+                        .HasForeignKey("RepublicId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("AspNetCore.Models.Entities.Tariff", "Tariff")
                         .WithMany()

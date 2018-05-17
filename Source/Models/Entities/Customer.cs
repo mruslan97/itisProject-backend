@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
 namespace AspNetCore.Models.Entities
 {
     public class Customer
@@ -7,7 +10,8 @@ namespace AspNetCore.Models.Entities
         public AppUser Identity { get; set; }
         public int Balance { get; set; }
         public string PassportSeries { get; set; }
-        public string Republic { get; set; }
+        public int RepublicId { get; set; }
+        public Republic Republic { get; set; }
         public Tariff Tariff { get; set; }
     }
 }

@@ -36,25 +36,26 @@ namespace AspNetCore.Controllers
             var customer = await _appDbContext.Customers.Include(c => c.Identity).Include(t => t.Tariff)
                 .SingleAsync(c => c.Identity.Id == userId.Value);
             var userRole = Enum.GetName(typeof(Roles), customer.Identity.Role);
+            var republic = _appDbContext.Republics.SingleOrDefault(r => r.Id == customer.RepublicId);
             return new OkObjectResult(new
             {
                 userRole,
                 customer.Identity.FirstName,
                 customer.Identity.LastName,
                 customer.Balance,
-                customer.Republic,
                 customer.PassportSeries,
-                customer.Tariff
+                customer.Tariff,
+                republic.Name
             });
         }
 
         [HttpGet("api/changeRepublic")]
-        public async Task<IActionResult> ChangeRepublic(string republic)
+        public async Task<IActionResult> ChangeRepublic(int republicId)
         {
             var userId = _caller.Claims.Single(c => c.Type == "id");
             var customer = await _appDbContext.Customers.Include(c => c.Identity)
                 .SingleAsync(c => c.Identity.Id == userId.Value);
-            customer.Republic = republic;
+            customer.Republic = _appDbContext.Republics.SingleOrDefault(r => r.Id == republicId);
             _appDbContext.SaveChanges();
             return Ok();
         }
