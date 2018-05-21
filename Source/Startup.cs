@@ -149,7 +149,7 @@ namespace AspNetCore
             //                }
             //            });
             //    });
-
+            
             app.UseAuthentication();
             app.UseDefaultFiles();
             app.UseStaticFiles();

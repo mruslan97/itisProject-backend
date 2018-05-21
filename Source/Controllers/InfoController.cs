@@ -21,6 +21,18 @@ namespace AspNetCore.Controllers
         {
             _appDbContext = appDbContext;
         }
+
+        [HttpGet("api/supports")]
+        public async Task<IActionResult> GetSupports()
+        {
+            // retrieve the user info
+            //HttpContext.User
+
+            return new OkObjectResult(new
+            {
+                supportUsers = _appDbContext.Customers.Where(c => c.Identity.Role == Roles.Support).Select(e => e.Identity.Email).ToList()
+            });
+        }
         [HttpGet("api/tariffs")]
         public async Task<IActionResult> GetTariffs()
         {
