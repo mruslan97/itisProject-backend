@@ -14,5 +14,7 @@ namespace AspNetCore.Data
         public DbSet<Tariff> Tariffs { get; set; }
         public DbSet<Republic> Republics { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<Dialogue> Dialogues { get; set; }
+        
     }
 }

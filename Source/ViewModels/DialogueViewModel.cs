@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace AspNetCore.ViewModels
 {
-    public class MessageViewModel
+    public class DialogueViewModel
     {
-        public int DialogueId { get; set; }
-        public string Text { get; set; }
+        public string Subject { get; set; }
+        public string ToUserEmail { get; set; }
     }
 }

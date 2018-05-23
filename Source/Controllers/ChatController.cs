@@ -40,11 +40,14 @@ namespace AspNetCore.Controllers
             var userId = _caller.Claims.Single(c => c.Type == "id");
             var user = await _appDbContext.Customers.Include(c => c.Identity)
                 .SingleAsync(c => c.Identity.Id == userId.Value);
-            var messages = _appDbContext.Messages.Where(m => m.IsReaded == false && m.To.Email == user.Identity.Email).Include(m => m.From).ToList();
-            _appDbContext.Messages.Where(m => m.IsReaded == false && m.To.Email == user.Identity.Email).ToList()
+            var dialogues = _appDbContext.Dialogues.Where(d => d.To.Email == user.Identity.Email);
+            var messages = _appDbContext.Messages
+                .Where(m => m.IsReaded == false && dialogues.Contains(m.Dialogue));
+            var result = messages.Select(m => new {DialogueId = m.Dialogue.Id, Text = m.Text, Time = m.DateTime}).AsNoTracking().ToList();
+            _appDbContext.Messages.Where(m => dialogues.Contains(m.Dialogue)).ToList()
                 .ForEach(m => m.IsReaded = true);
             _appDbContext.SaveChanges();
-            return new OkObjectResult(messages.Select(m => new { From = m.From.Email, m.Text }));
+            return new OkObjectResult(result);
         }
 
         [HttpPost("api/sendMessage")]
@@ -54,19 +57,50 @@ namespace AspNetCore.Controllers
             var userId = _caller.Claims.Single(c => c.Type == "id");
             var fromUser = await _appDbContext.Customers.Include(c => c.Identity)
                 .SingleAsync(c => c.Identity.Id == userId.Value);
-            var toUser = _appDbContext.Customers.Include(c => c.Identity)
-                .SingleOrDefault(u => u.Identity.Email.ToLower() == inputMessage.ToUserName)
-                ?.Identity;
+            var dialogue = _appDbContext.Dialogues?.SingleOrDefault(d => d.Id == inputMessage.DialogueId);
             var message = new Message
             {
-                From = fromUser.Identity,
+                FromUser = fromUser.Identity,
                 IsReaded = false,
                 Text = inputMessage.Text,
-                To = toUser
+                Dialogue = dialogue,
+                DateTime = DateTime.Now
             };
             _appDbContext.Add(message);
             _appDbContext.SaveChanges();
             return Ok("Message sended");
+        }
+
+        [HttpPost("api/createDialog")]
+        public async Task<IActionResult> CreateDialogue([FromBody] DialogueViewModel inputDialog)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var userId = _caller.Claims.Single(c => c.Type == "id");
+            var fromUser = await _appDbContext.Customers.Include(c => c.Identity)
+                .SingleAsync(c => c.Identity.Id == userId.Value);
+            var toUser = _appDbContext.Customers.Include(c => c.Identity)
+                .SingleOrDefault(c => c.Identity.Email == inputDialog.ToUserEmail);
+            var dialogue = new Dialogue
+            {
+                From = fromUser.Identity,
+                To = toUser.Identity,
+                Subject = inputDialog.Subject
+            };
+            _appDbContext.Add(dialogue);
+            _appDbContext.SaveChanges();
+            return Ok("Dialogue created");
+        }
+
+        [HttpGet("api/getDialogs")]
+        public async Task<IActionResult> GetDialogues()
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var userId = _caller.Claims.Single(c => c.Type == "id");
+            var user = await _appDbContext.Customers.Include(c => c.Identity)
+                .SingleAsync(c => c.Identity.Id == userId.Value);
+            var dialogues = _appDbContext.Dialogues.Where(d => d.To.Email == user.Identity.Email
+                                                               || d.From.Email == user.Identity.Email);
+            return new OkObjectResult(dialogues.Select(d => new { DialogueId = d.Id, Subject = d.Subject }));
         }
 
     }
