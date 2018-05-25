@@ -11,6 +11,7 @@ namespace AspNetCore.ViewModels.Validations
             RuleFor(vm => vm.FirstName).NotEmpty().WithMessage("FirstName cannot be empty");
             RuleFor(vm => vm.LastName).NotEmpty().WithMessage("LastName cannot be empty");
             RuleFor(vm => vm.PassportSeries).NotEmpty().WithMessage("Passport cannot be empty");
+            RuleFor(vm => vm.RepublicId).GreaterThan(2).LessThan(88).WithMessage("Invalid Republic id");
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -33,6 +32,22 @@ namespace AspNetCore.Controllers
             _appDbContext = appDbContext;
         }
 
+        [HttpGet("api/getChatHistory")]
+        public async Task<IActionResult> GetChatHistory(int id)
+        {
+            //var dialogues = _appDbContext.Dialogues.Where(d => d.Id == id);
+            var messages = _appDbContext.Messages
+                .Where(m => m.Dialogue.Id == id);
+            var result = messages.Select(m => new
+            {
+                m.Text,
+                Time = m.DateTime.TimeOfDay.TotalMilliseconds,
+                Role = Enum.GetName(typeof(Roles), m.FromUser.Role)
+            }).AsNoTracking().ToList();
+
+            return new OkObjectResult(result);
+        }
+
         [HttpGet("api/getMessages")]
         public async Task<IActionResult> RecieveMessages()
         {
@@ -43,7 +58,8 @@ namespace AspNetCore.Controllers
             var dialogues = _appDbContext.Dialogues.Where(d => d.To.Email == user.Identity.Email);
             var messages = _appDbContext.Messages
                 .Where(m => m.IsReaded == false && dialogues.Contains(m.Dialogue));
-            var result = messages.Select(m => new {DialogueId = m.Dialogue.Id, Text = m.Text, Time = m.DateTime}).AsNoTracking().ToList();
+            var result = messages.Select(m => new {DialogueId = m.Dialogue.Id, m.Text, Time = m.DateTime})
+                .AsNoTracking().ToList();
             _appDbContext.Messages.Where(m => dialogues.Contains(m.Dialogue)).ToList()
                 .ForEach(m => m.IsReaded = true);
             _appDbContext.SaveChanges();
@@ -88,7 +104,7 @@ namespace AspNetCore.Controllers
             };
             _appDbContext.Add(dialogue);
             _appDbContext.SaveChanges();
-            return Ok("Dialogue created");
+            return Ok(_appDbContext.Dialogues.Last().Id);
         }
 
         [HttpGet("api/getDialogs")]
@@ -100,8 +116,7 @@ namespace AspNetCore.Controllers
                 .SingleAsync(c => c.Identity.Id == userId.Value);
             var dialogues = _appDbContext.Dialogues.Where(d => d.To.Email == user.Identity.Email
                                                                || d.From.Email == user.Identity.Email);
-            return new OkObjectResult(dialogues.Select(d => new { DialogueId = d.Id, Subject = d.Subject }));
+            return new OkObjectResult(dialogues.Select(d => new {DialogueId = d.Id, d.Subject}));
         }
-
     }
 }
