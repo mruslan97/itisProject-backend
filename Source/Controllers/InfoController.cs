@@ -25,9 +25,6 @@ namespace AspNetCore.Controllers
         [HttpGet("api/supports")]
         public async Task<IActionResult> GetSupports()
         {
-            // retrieve the user info
-            //HttpContext.User
-
             return new OkObjectResult(new
             {
                 supportUsers = _appDbContext.Customers.Where(c => c.Identity.Role == Roles.Support).Select(e => e.Identity.Email).ToList()
@@ -36,9 +33,7 @@ namespace AspNetCore.Controllers
         [HttpGet("api/tariffs")]
         public async Task<IActionResult> GetTariffs()
         {
-            // retrieve the user info
-            //HttpContext.User
-
+            
             return new OkObjectResult(new
             {
                 _appDbContext.Tariffs
@@ -48,19 +43,13 @@ namespace AspNetCore.Controllers
         [HttpGet("api/republics")]
         public async Task<IActionResult> GetRepublics()
         {
-            // retrieve the user info
-            //HttpContext.User
-            
             return new OkObjectResult(_appDbContext.Republics);
         }
 
         [HttpGet("api/republicStats")]
         public async Task<IActionResult> GetRepublicStats()
         {
-            // retrieve the user info
-            //HttpContext.User
-
-            return new OkObjectResult( _appDbContext.Republics.Include(r => r.Customers).Select(r => new { id = r.Id, republicName = r.Name, count = r.Customers.Count}).ToList());
+           return new OkObjectResult( _appDbContext.Republics.Include(r => r.Customers).Select(r => new { id = r.Id, republicName = r.Name, count = r.Customers.Count}).ToList());
         }
     }
 }
