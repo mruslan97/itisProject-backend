@@ -41,7 +41,7 @@ namespace AspNetCore.Controllers
             var result = messages.Select(m => new
             {
                 m.Text,
-                Time = m.DateTime.TimeOfDay.TotalMilliseconds,
+                Time = m.DateTime,
                 Role = Enum.GetName(typeof(Roles), m.FromUser.Role)
             }).AsNoTracking().ToList();
 

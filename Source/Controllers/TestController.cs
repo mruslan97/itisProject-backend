@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 
 namespace AspNetCore.Controllers
 {
-    //[Authorize(Policy = "ApiUser")]
+    [Authorize(Policy = "ApiUser")]
     [Produces("application/json")]
     public class TestController : Controller
     {
@@ -61,42 +61,5 @@ namespace AspNetCore.Controllers
             _appDbContext.SaveChanges();
             return Ok("База дропнута");
         }
-
-        [HttpGet("buffbase")]
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public async Task<IActionResult> BuffBase()
-        {
-            var random = new Random();
-            for (var i = 0; i < 10000; i++)
-            {
-                var regModel = new RegistrationViewModel
-                {
-                    Email = $"testUser{i}@mail.ru",
-                    FirstName = $"UserName{i}",
-                    LastName = $"LastName{i}",
-                    PassportSeries = "9211 255522",
-                    Password = "qwerty",
-                    RepublicId = random.Next(3, 87)
-                };
-                var userIdentity = _mapper.Map<AppUser>(regModel);
-
-                var result = await _userManager.CreateAsync(userIdentity, regModel.Password);
-
-                if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
-                var balance = random.Next(0, 1000);
-                await _appDbContext.Customers.AddAsync(new Customer
-                {
-                    IdentityId = userIdentity.Id,
-                    Balance = balance,
-                    Tariff = _appDbContext.Tariffs.SingleOrDefault(t => t.Id == 1),
-                    Republic = _appDbContext.Republics.SingleOrDefault(r => r.Id == regModel.RepublicId),
-                    PassportSeries = regModel.PassportSeries
-                    //IsAdmin = false
-                });
-                await _appDbContext.SaveChangesAsync();
-            }
-            return Ok("База бафнута");
-        }
-
     }
 }
